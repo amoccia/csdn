@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CYBER SECURITY NEWS DASHBOARD</title>
+
+<style>
+body { background:#0a0a0a; color:#00ff9f; font-family:monospace; margin:0; padding:20px; }
+
+.header { text-align:center; margin-bottom:20px; }
+
+.stats {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:20px;
+}
+
+.stat {
+  padding:5px 10px;
+  border:1px solid #00ff9f33;
+  border-radius:6px;
+  font-size:12px;
+}
+
+.controls {
+  max-width:900px;
+  margin:auto;
+  margin-bottom:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+input {
+  flex:1;
+  padding:8px;
+  background:#000;
+  border:1px solid #00ff9f33;
+  color:#00ff9f;
+}
+
+button {
+  padding:8px;
+  background:#000;
+  border:1px solid #00ff9f33;
+  color:#00ff9f;
+  cursor:pointer;
+}
+
+.container { max-width:900px; margin:auto; }
+
+.card {
+  border:1px solid #00ff9f33;
+  border-radius:10px;
+  padding:15px;
+  margin-bottom:15px;
+}
+
+.top { display:flex; justify-content:space-between; }
+
+.badge {
+  font-size:10px;
+  padding:3px 6px;
+  border-radius:4px;
+}
+
+.critical { background:red; color:#fff; }
+.high { background:orange; color:#000; }
+.medium { background:yellow; color:#000; }
+.low { background:#00cc7a; color:#000; }
+
+.title { display:block; margin-top:5px; color:#00ff9f; text-decoration:none; }
+.desc { font-size:12px; color:#00cc7a; }
+
+@media (max-width:600px){
+  .controls { flex-direction:column; }
+}
+</style>
+
+<script>
+function filterSeverity(level) {
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = (level === 'all' || c.dataset.severity === level) ? 'block' : 'none';
+  });
+}
+
+function searchNews() {
+  const q = document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = c.innerText.toLowerCase().includes(q) ? 'block' : 'none';
+  });
+}
+</script>
+</head>
+
+<body>
+
+<div class="header">
+<h1>🟢 CYBER SECURITY NEWS DASHBOARD 🟢</h1>
+<p>4/19/2026, 10:01:49 AM</p>
+</div>
+
+<div class="stats">
+<div class="stat">Total: 39</div>
+<div class="stat">Critical: 2</div>
+<div class="stat">High: 1</div>
+<div class="stat">Medium: 0</div>
+<div class="stat">Low: 36</div>
+</div>
+
+<div class="controls">
+<input id="search" placeholder="Search..." onkeyup="searchNews()" />
+<button onclick="filterSeverity('all')">All</button>
+<button onclick="filterSeverity('critical')">Critical</button>
+<button onclick="filterSeverity('high')">High</button>
+<button onclick="filterSeverity('medium')">Medium</button>
+<button onclick="filterSeverity('low')">Low</button>
+</div>
+
+<div class="container">
+
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#01</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-1.html" class="title">CVE-2026-6588 | serge-chat serge fino a 1.4TB Model API Endpoint model.py download_model/delete_model autenticazione debole</a>
+      <p class="desc">È stata trovata una vulnerabilità classificata come critico in serge-chat serge fino a 1.4TB. Viene interessata una funzione sconosciuta app...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#02</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-2.html" class="title">CVE-2026-6587 | vibrantlabsai RAGAS fino a 0.4.3 Collections util.py _try_process_local_file/_try_process_url retrieved_contexts escalationi di privilegi</a>
+      <p class="desc">È stata scoperta una vulnerabilità classificata come critico in vibrantlabsai RAGAS fino a 0.4.3. Si considera coinvolta una funzione sconos...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#03</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-3.html" class="title">CVE-2026-6586 | TransformerOptimus SuperAGI fino a 0.0.14 Budget Endpoint budget.py get_budget/update_budget escalationi di privilegi</a>
+      <p class="desc">È stata rilevata una vulnerabilità classificata come critico in TransformerOptimus SuperAGI fino a 0.0.14. Risulta coinvolta una funzione sc...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#04</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-4.html" class="title">CVE-2026-6585 | TransformerOptimus SuperAGI fino a 0.0.14 Organisation Update Endpoint organisation.py update_organisation organisation_id escalationi di privilegi</a>
+      <p class="desc">È stata individuata una vulnerabilità classificata come problematico in TransformerOptimus SuperAGI fino a 0.0.14. Da questa vulnerabilità è...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#05</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-5.html" class="title">CVE-2026-6584 | TransformerOptimus SuperAGI fino a 0.0.14 User Update Endpoint user.py update_user user_id escalationi di privilegi</a>
+      <p class="desc">Un punto di debole di livello problematico è stato rilevato in TransformerOptimus SuperAGI fino a 0.0.14. É interessato la funzione update_u...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#06</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-6.html" class="title">CVE-2026-6583 | TransformerOptimus SuperAGI fino a 0.0.14 API Key Management Endpoint api_key.py delete_api_key/edit_api_key escalationi di privilegi</a>
+      <p class="desc">Un punto di criticita di livello problematico è stato rilevato in TransformerOptimus SuperAGI fino a 0.0.14. Riguarda la funzione delete_api...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#07</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-7.html" class="title">CVE-2026-6582 | TransformerOptimus SuperAGI fino a 0.0.14 Vector Database Management Endpoint vector_dbs.py get_vector_db_details autenticazione debole</a>
+      <p class="desc">In TransformerOptimus SuperAGI fino a 0.0.14 è stato trovato un punto critico di livello critico. Viene interessata una funzione sconosciuta...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#08</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-8.html" class="title">CVE-2026-6581 | H3C Magic B1 fino a 100R004 /goform/aspForm SetMobileAPInfoById param buffer overflow</a>
+      <p class="desc">In H3C Magic B1 fino a 100R004 è stata rilevato un punto critico di livello critico. Si considera coinvolta una funzione sconosciuta nel fil...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#09</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-9.html" class="title">CVE-2026-6580 | liangliangyy DjangoBlog fino a 2.1.0.0 Amap API Call owntracks/views.py key cifratura debole</a>
+      <p class="desc">Un punto critico di livello critico è stato rilevato in liangliangyy DjangoBlog fino a 2.1.0.0. Risulta coinvolta una funzione sconosciuta d...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#10</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-10.html" class="title">CVE-2026-6579 | liangliangyy DjangoBlog fino a 2.1.0.0 Clean Endpoint blog/views.py autenticazione debole</a>
+      <p class="desc">In liangliangyy DjangoBlog fino a 2.1.0.0 stata rilevata una vulnerabilità di livello critico. Da questa vulnerabilità è interessato una fun...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#11</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-11.html" class="title">CVE-2026-6578 | liangliangyy DjangoBlog fino a 2.1.0.0 Setting djangoblog/settings.py SECRET_KEY autenticazione debole</a>
+      <p class="desc">È stata rilevata una vulnerabilità di livello critico in liangliangyy DjangoBlog fino a 2.1.0.0. É interessato una funzione sconosciuta del ...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#12</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-12.html" class="title">CVE-2026-6577 | liangliangyy DjangoBlog fino a 2.1.0.0 logtracks Endpoint owntracks/views.py autenticazione debole</a>
+      <p class="desc">Una vulnerabilità di livello critico è stata rilevata in liangliangyy DjangoBlog fino a 2.1.0.0. Riguarda una funzione sconosciuta del file ...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#13</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-13.html" class="title">CVE-2026-6576 | liangliangyy DjangoBlog fino a 2.1.0.0 WeChat Bot Interface commonapi.py CommandHandler Fonte escalationi di privilegi</a>
+      <p class="desc">È stata trovata una vulnerabilità classificata come critico in liangliangyy DjangoBlog fino a 2.1.0.0. Viene interessata una funzione sconos...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#14</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-14.html" class="title">CVE-2026-0868 | turn2honey EMC Plugin fino a 4.4 su WordPress calendly cross site scripting</a>
+      <p class="desc">È stata scoperta una vulnerabilità classificata come problematico in turn2honey EMC Plugin fino a 4.4 su WordPress. Si considera coinvolta u...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#15</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-15.html" class="title">CVE-2026-6574 | osuuu LightPicture fino a 1.2.2 API Upload Endpoint /public/install/lp.sql key autenticazione debole</a>
+      <p class="desc">È stata rilevata una vulnerabilità classificata come critico in osuuu LightPicture fino a 1.2.2. Risulta coinvolta una funzione sconosciuta ...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#16</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-16.html" class="title">CVE-2026-41242 | protobufjs protobuf.js fino a 7.5.4/8.0.0 Genere escalationi di privilegi (GHSA-xq3m-2v4x-88gg / EUVD-2026-23678)</a>
+      <p class="desc">È stata individuata una vulnerabilità classificata come critico in protobufjs protobuf.js fino a 7.5.4/8.0.0. Da questa vulnerabilità è inte...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#17</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-17.html" class="title">CVE-2026-6573 | PHPEMS 11.0 Instant Exam Creation exams.master.php temppage uploadfile escalationi di privilegi</a>
+      <p class="desc">Un punto di debole di livello critico è stato rilevato in PHPEMS 11.0. É interessato la funzione temppage del file /app/exam/controller/exam...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#18</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-18.html" class="title">CVE-2026-6572 | Collabora KodExplorer fino a 4.52 fileUpload Endpoint share.class.php escalationi di privilegi</a>
+      <p class="desc">Un punto di criticita di livello critico è stato rilevato in Collabora KodExplorer fino a 4.52. Riguarda una funzione sconosciuta del file /...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#19</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-19.html" class="title">CVE-2026-6571 | kodcloud KodExplorer fino a 4.52 systemRole.class.php roleGroupAction group_role escalationi di privilegi</a>
+      <p class="desc">In kodcloud KodExplorer fino a 4.52 è stato trovato un punto critico di livello critico. Viene interessata una funzione sconosciuta apparten...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#20</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-20.html" class="title">CVE-2026-6570 | kodcloud KodExplorer fino a 4.52 systemMember.class.php initInstall path escalationi di privilegi</a>
+      <p class="desc">In kodcloud KodExplorer fino a 4.52 è stata rilevato un punto critico di livello problematico. Si considera coinvolta una funzione sconosciu...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#21</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-21.html" class="title">CVE-2026-6569 | kodcloud KodExplorer fino a 4.52 fileGet Endpoint share.class.php fileUrl autenticazione debole</a>
+      <p class="desc">Un punto critico di livello critico è stato rilevato in kodcloud KodExplorer fino a 4.52. Risulta coinvolta una funzione sconosciuta del fil...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#22</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-22.html" class="title">CVE-2026-6568 | kodcloud KodExplorer fino a 4.52 Public Share share.class.php initShareOld path directory traversal</a>
+      <p class="desc">In kodcloud KodExplorer fino a 4.52 stata rilevata una vulnerabilità di livello critico. Da questa vulnerabilità è interessato la funzione s...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#23</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-23.html" class="title">CVE-2026-6564 | EMQ EMQX Enterprise fino a 6.1.0 Session Handling escalationi di privilegi</a>
+      <p class="desc">È stata rilevata una vulnerabilità di livello critico in EMQ EMQX Enterprise fino a 6.1.0. É interessato una funzione sconosciuta del compon...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#24</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-24.html" class="title">CVE-2026-6563 | H3C Magic B1 fino a 100R004 /goform/aspForm SetAPWifiorLedInfoById param buffer overflow</a>
+      <p class="desc">Una vulnerabilità di livello critico è stata rilevata in H3C Magic B1 fino a 100R004. Riguarda la funzione SetAPWifiorLedInfoById del file /...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#25</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-25.html" class="title">CVE-2026-6562 | dameng100 muucmf 1.9.5.20260309 /index/Search/index.html getListByPage keyword iniezione SQL</a>
+      <p class="desc">È stata trovata una vulnerabilità classificata come critico in dameng100 muucmf 1.9.5.20260309. Viene interessata una funzione sconosciuta a...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#26</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-26.html" class="title">CVE-2026-6561 | EyouCMS fino a 1.7.1 Index.php edit_adminlogo filename escalationi di privilegi</a>
+      <p class="desc">È stata scoperta una vulnerabilità classificata come critico in EyouCMS fino a 1.7.1. Si considera coinvolta una funzione sconosciuta nel fi...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#27</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-27.html" class="title">CVE-2026-6560 | H3C Magic B0 fino a 100R002 /goform/aspForm Edit_BasicSSID param buffer overflow</a>
+      <p class="desc">È stata rilevata una vulnerabilità classificata come critico in H3C Magic B0 fino a 100R002. Risulta coinvolta una funzione sconosciuta del ...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#28</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-28.html" class="title">CVE-2026-6559 | Wavlink WL-WN579A3 220323 /cgi-bin/login.cgi sub_401F80 Nome host cross site scripting</a>
+      <p class="desc">È stata individuata una vulnerabilità classificata come problematico in Wavlink WL-WN579A3 220323. Da questa vulnerabilità è interessato la ...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#29</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-29.html" class="title">CVE-2026-2986 | ajay Contextual Related Posts Plugin fino a 4.2.1 su WordPress other_attributes cross site scripting (EUVD-2026-23674)</a>
+      <p class="desc">Un punto di debole di livello problematico è stato rilevato in ajay Contextual Related Posts Plugin fino a 4.2.1. É interessato una funzione...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#30</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-30.html" class="title">CVE-2026-2505 | elzahlan Categories Images Plugin fino a 3.3.1 su WordPress Shortcode z_taxonomy_image cross site scripting (EUVD-2026-23672)</a>
+      <p class="desc">Un punto di criticita di livello problematico è stato rilevato in elzahlan Categories Images Plugin fino a 3.3.1. Riguarda la funzione z_tax...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#31</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-31.html" class="title">CVE-2026-0894 | vanderwijk Content Blocks Plugin fino a 3.3.9 su WordPress Custom Post Widget content_block cross site scripting (EUVD-2026-23670)</a>
+      <p class="desc">In vanderwijk Content Blocks Plugin fino a 3.3.9 è stato trovato un punto critico di livello problematico. Viene interessata una funzione sc...</p>
+    </div>
+  
+    <div class="card" data-severity="critical">
+      <div class="top">
+        <span class="index">#32</span>
+        <span class="badge critical">critical</span>
+      </div>
+
+      <a href="news-32.html" class="title">Critical flaw in Protobuf library enables JavaScript code execution</a>
+      <p class="desc">Proof-of-concept exploit code has been published for a critical remote code execution flaw in protobuf.js, a widely used JavaScript implemen...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#33</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-33.html" class="title">Microsoft Teams right-click paste broken by Edge update bug</a>
+      <p class="desc">Microsoft is warning that a recent Microsoft Edge browser update introduced a bug that breaks right-click paste in chats in the Microsoft Te...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#34</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-34.html" class="title">NAKIVO v11.2: Ransomware Defense, Faster Replication, vSphere 9, and Proxmox VE 9.0 Support</a>
+      <p class="desc">NAKIVO Inc. announced the general availability of NAKIVO Backup & Replication v11.2, focused on fast, reliable, and proactive data protectio...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#35</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-35.html" class="title">Microsoft Teams Right-Click Paste Broken Following Edge Browser Update</a>
+      <p class="desc">A confirmed bug in Microsoft Teams desktop client version 26072.519.4556.7438 is disabling the right-click paste option for users on Windows...</p>
+    </div>
+  
+    <div class="card" data-severity="critical">
+      <div class="top">
+        <span class="index">#36</span>
+        <span class="badge critical">critical</span>
+      </div>
+
+      <a href="news-36.html" class="title">OpenAI Expands Cyber Defense Program With GPT-5.4-Cyber Access for Trusted Organizations</a>
+      <p class="desc">OpenAI has officially launched the expanded phase of its Trusted Access for Cyber program. Granting select organizations access to its speci...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#37</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-37.html" class="title">Apple Works on Fix for iPhone Passcode Bug Linked to Missing Czech Keyboard Character</a>
+      <p class="desc">Apple is reportedly developing a software fix for a frustrating iOS 26 bug that has left some users entirely locked out of their iPhones for...</p>
+    </div>
+  
+    <div class="card" data-severity="high">
+      <div class="top">
+        <span class="index">#38</span>
+        <span class="badge high">high</span>
+      </div>
+
+      <a href="news-38.html" class="title">Researcher Uses Claude Opus to Build a Working Chrome Exploit Chain</a>
+      <p class="desc">Amidst the heated debate surrounding Anthropic’s recent announcement of its Mythos and Project Glasswing models, a security researcher has d...</p>
+    </div>
+  
+    <div class="card" data-severity="low">
+      <div class="top">
+        <span class="index">#39</span>
+        <span class="badge low">low</span>
+      </div>
+
+      <a href="news-39.html" class="title">Tycoon 2FA Loses Phishing Kit Crown Amid Surge in Attacks</a>
+      <p class="desc">Threat actors are reusing Tycoon 2FA tools across other phishing kits following the platform’s disruption. The post Tycoon 2FA Loses Phishin...</p>
+    </div>
+  
+</div>
+
+</body>
+</html>
