@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Security News Dashboard</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --primary: #00ff9f;
+      --primary-dim: #00cc7a;
+      --card-bg: #111;
+      --border: rgba(0, 255, 159, 0.2);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--primary);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: clamp(1.2rem, 4vw, 2rem);
+      text-shadow: 0 0 20px var(--primary);
+      margin: 0 0 10px 0;
+    }
+    .header time {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    .stat {
+      padding: 8px 15px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      background: var(--card-bg);
+    }
+    .stat.critical { border-color: #ff4444; }
+    .stat.high { border-color: #ff8c00; }
+    .stat.medium { border-color: #ffd700; }
+    .stat.low { border-color: var(--primary-dim); }
+    .controls {
+      max-width: 900px;
+      margin: 0 auto 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-wrapper {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrapper::before {
+      content: '🔍';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 10px 10px 35px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .filter-buttons {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 10px 15px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    button:hover, button.active {
+      background: var(--primary);
+      color: var(--bg);
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      display: grid;
+      gap: 15px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      background: var(--card-bg);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .index {
+      font-size: 12px;
+      opacity: 0.6;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .critical { background: #ff4444; color: #fff; }
+    .high { background: #ff8c00; color: #000; }
+    .medium { background: #ffd700; color: #000; }
+    .low { background: var(--primary-dim); color: #000; }
+    .card-title {
+      display: block;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .card-title:hover { text-decoration: underline; }
+    .card-desc {
+      font-size: 12px;
+      color: var(--primary-dim);
+      margin: 0;
+    }
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      opacity: 0.6;
+      display: none;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      opacity: 0.6;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .controls { flex-direction: column; }
+      .filter-buttons { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🛡️ CYBER SECURITY NEWS DASHBOARD</h1>
+  <time datetime="2026-05-01T13:02:19.467Z">01/05/2026, 13:02</time>
+</div>
+
+<div class="stats">
+  <div class="stat">📊 Totale: <strong>67</strong></div>
+  <div class="stat critical">🔴 Critical: <strong>2</strong></div>
+  <div class="stat high">🟠 High: <strong>1</strong></div>
+  <div class="stat medium">🟡 Medium: <strong>2</strong></div>
+  <div class="stat low">🟢 Low: <strong>62</strong></div>
+</div>
+
+<div class="controls">
+  <div class="search-wrapper">
+    <input type="search" id="search" placeholder="Cerca nelle notizie..." aria-label="Cerca">
+  </div>
+  <div class="filter-buttons">
+    <button class="active" data-filter="all">Tutte</button>
+    <button data-filter="critical">Critical</button>
+    <button data-filter="high">High</button>
+    <button data-filter="medium">Medium</button>
+    <button data-filter="low">Low</button>
+  </div>
+</div>
+
+<div class="container" id="cards">
+  
+    <div class="card" data-severity="critical">
+      <div class="card-top">
+        <span class="index">#01</span>
+        <span class="badge critical">critical</span>
+      </div>
+      <a href="news-51-china-aligned-attackers-use-shadowpad-iox-proxy-an.html" class="card-title">China-Aligned Attackers Use ShadowPad, IOX Proxy, and WMIC in Multi-Stage Espionage Campaign</a>
+      <p class="card-desc">A China-aligned threat group has been carrying out a carefully planned espionage campaign against government agencies and critical infrastru...</p>
+    </div>
+    <div class="card" data-severity="critical">
+      <div class="card-top">
+        <span class="index">#02</span>
+        <span class="badge critical">critical</span>
+      </div>
+      <a href="news-53-critical-wireshark-vulnerabilities-let-attackers-e.html" class="card-title">Critical Wireshark Vulnerabilities Let Attackers Execute Arbitrary Code Via Malformed Packets</a>
+      <p class="card-desc">Wireshark, the world&amp;#8217;s most widely used open-source network protocol analyzer, has released a major security update addressing over 40...</p>
+    </div>
+    <div class="card" data-severity="high">
+      <div class="card-top">
+        <span class="index">#03</span>
+        <span class="badge high">high</span>
+      </div>
+      <a href="news-41-new-linux-copy-fail-flaw-gives-hackers-root-on-maj.html" class="card-title">New Linux ‘Copy Fail’ flaw gives hackers root on major distros</a>
+      <p class="card-desc">An exploit has been published for a local privilege escalation vulnerability dubbed &quot;Copy Fail&quot; that impacts Linux kernels released since 20...</p>
+    </div>
+    <div class="card" data-severity="medium">
+      <div class="card-top">
+        <span class="index">#04</span>
+        <span class="badge medium">medium</span>
+      </div>
+      <a href="news-3-cve-2026-36956-dbit-n300-t1-pro-wireless-router-1-.html" class="card-title">CVE-2026-36956 | Dbit N300 T1 Pro Wireless Router 1.0.0 API Endpoint cross site request forgery</a>
+      <p class="card-desc">È stata scoperta una vulnerabilità classificata come problematico in Dbit N300 T1 Pro Wireless Router 1.0.0. Si considera coinvolta una funz...</p>
+    </div>
+    <div class="card" data-severity="medium">
+      <div class="card-top">
+        <span class="index">#05</span>
+        <span class="badge medium">medium</span>
+      </div>
+      <a href="news-14-cve-2026-7501-linkstackorg-linkstack-fino-a-4-8-6-.html" class="card-title">CVE-2026-7501 | LinkStackOrg LinkStack fino a 4.8.6 UserController.php editPage pageDescription cross site scripting (ID 974)</a>
+      <p class="card-desc">È stata trovata una vulnerabilità classificata come problematico in LinkStackOrg LinkStack fino a 4.8.6. Viene interessata una funzione scon...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#06</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-1-cve-2026-7513-utt-hiper-1200gw-fino-a-2-5-3-170306.html" class="card-title">CVE-2026-7513 | UTT HiPER 1200GW fino a 2.5.3-170306 formRemoteControl strcpy buffer overflow</a>
+      <p class="card-desc">Una vulnerabilità di livello critico è stata rilevata in UTT HiPER 1200GW fino a 2.5.3-170306. Riguarda la funzione strcpy del file /goform/...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#07</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-2-cve-2026-7512-utt-hiper-1200gw-fino-a-2-5-3-1703-g.html" class="card-title">CVE-2026-7512 | UTT HiPER 1200GW fino a 2.5.3-1703 /goform/formUser strcpy buffer overflow</a>
+      <p class="card-desc">È stata trovata una vulnerabilità classificata come critico in UTT HiPER 1200GW fino a 2.5.3-1703. Viene interessata una funzione sconosciut...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#08</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-4-cve-2026-36959-u-speed-n300-1-0-0-router-managemen.html" class="card-title">CVE-2026-36959 | U-SPEED N300 1.0.0 Router Management Interface /api/login rivelazione di informazioni</a>
+      <p class="card-desc">È stata rilevata una vulnerabilità classificata come problematico in U-SPEED N300 1.0.0. Risulta coinvolta una funzione sconosciuta del file...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#09</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-5-cve-2026-7500-keycloak-account-rest-api-account-v1.html" class="card-title">CVE-2026-7500 | Keycloak Account REST API /account/v1alpha1 checkAccountApiEnabled escalationi di privilegi</a>
+      <p class="card-desc">È stata individuata una vulnerabilità classificata come problematico in Keycloak. Da questa vulnerabilità è interessato la funzione checkAcc...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#10</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-6-cve-2026-36957-dbit-n300-t1-pro-easy-setup-wireles.html" class="card-title">CVE-2026-36957 | Dbit N300 T1 Pro Easy Setup Wireless Wi-Fi Router 1.0.0 URI negazione del servizio</a>
+      <p class="card-desc">Un punto di debole di livello problematico è stato rilevato in Dbit N300 T1 Pro Easy Setup Wireless Wi-Fi Router 1.0.0. É interessato una fu...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#11</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-7-cve-2026-36958-u-speed-n300-1-0-0-web-management-i.html" class="card-title">CVE-2026-36958 | U-SPEED N300 1.0.0 Web Management Interface negazione del servizio</a>
+      <p class="card-desc">Un punto di criticita di livello problematico è stato rilevato in U-SPEED N300 1.0.0. Riguarda una funzione sconosciuta del componente Web M...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#12</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-8-cve-2026-7510-owap-defectdojo-fino-a-2-55-4-benchm.html" class="card-title">CVE-2026-7510 | OWAP DefectDojo fino a 2.55.4 Benchmark/Engagement/Product/Survey escalationi di privilegi (Bug 14375)</a>
+      <p class="card-desc">In OWAP DefectDojo fino a 2.55.4 è stato trovato un punto critico di livello critico. Viene interessata una funzione sconosciuta appartenent...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#13</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-9-cve-2026-7508-bootstrap-cms-0-9-0-alpha-page-creat.html" class="card-title">CVE-2026-7508 | Bootstrap CMS 0.9.0-alpha Page Creation show.blade.php body escalationi di privilegi</a>
+      <p class="card-desc">In Bootstrap CMS 0.9.0-alpha è stata rilevato un punto critico di livello critico. Si considera coinvolta una funzione sconosciuta nel file ...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#14</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-10-cve-2026-7506-sourcecodester-hotel-management-syst.html" class="card-title">CVE-2026-7506 | SourceCodester Hotel Management System 1.0 check room_type iniezione SQL</a>
+      <p class="card-desc">Un punto critico di livello critico è stato rilevato in SourceCodester Hotel Management System 1.0. Risulta coinvolta una funzione sconosciu...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#15</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-11-cve-2026-7505-nextlevelbuilder-goclaw-goclaw-lite-.html" class="card-title">CVE-2026-7505 | nextlevelbuilder GoClaw/GoClaw Lite fino a 3.8.5 RPC escalationi di privilegi (Issue 866)</a>
+      <p class="card-desc">In nextlevelbuilder GoClaw and GoClaw Lite fino a 3.8.5 stata rilevata una vulnerabilità di livello critico. Da questa vulnerabilità è inter...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#16</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-12-cve-2026-7503-code-projects-for-plugin-4-1-2cu-513.html" class="card-title">CVE-2026-7503 | code-projects for Plugin 4.1.2cu.5137 /cgi-bin/cstecgi.cgi setWiFiMultipleConfig wepkey2 buffer overflow</a>
+      <p class="card-desc">È stata rilevata una vulnerabilità di livello critico in code-projects for Plugin 4.1.2cu.5137. É interessato la funzione setWiFiMultipleCon...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#17</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-13-cve-2026-7502-linkstackorg-linkstack-fino-a-4-8-6-.html" class="card-title">CVE-2026-7502 | LinkStackOrg LinkStack fino a 4.8.6 Management Endpoint UserController.php saveLink escalationi di privilegi (ID 975)</a>
+      <p class="card-desc">Una vulnerabilità di livello critico è stata rilevata in LinkStackOrg LinkStack fino a 4.8.6. Riguarda la funzione saveLink del file app/Htt...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#18</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-15-cve-2026-42353-i18next-i18next-http-middleware-pri.html" class="card-title">CVE-2026-42353 | i18next i18next-http-middleware prima 3.9.3 languages/namespaces escalationi di privilegi</a>
+      <p class="card-desc">È stata scoperta una vulnerabilità classificata come critico in i18next i18next-http-middleware. Si considera coinvolta una funzione sconosc...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#19</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-16-cve-2026-32934-coredns-1-12-2-1-12-4-1-14-0-1-14-2.html" class="card-title">CVE-2026-32934 | CoreDNS 1.12.2/1.12.4/1.14.0/1.14.2 DoQ Worker Pool negazione del servizio</a>
+      <p class="card-desc">È stata rilevata una vulnerabilità classificata come problematico in CoreDNS 1.12.2/1.12.4/1.14.0/1.14.2. Risulta coinvolta una funzione sco...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#20</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-17-cve-2026-7402-meware-pdks-prima-myr-3-5-2025117.html" class="card-title">CVE-2026-7402 | MeWare PDKS prima MYR_3.5.2025117</a>
+      <p class="card-desc">È stata individuata una vulnerabilità classificata come problematico in MeWare PDKS. Da questa vulnerabilità è interessato una funzione scon...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#21</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-18-cve-2026-7246-pallets-click-fino-a-8-3-2-click-edi.html" class="card-title">CVE-2026-7246 | Pallets Click fino a 8.3.2 click.edit escalationi di privilegi</a>
+      <p class="card-desc">Un punto di debole di livello critico è stato rilevato in Pallets Click fino a 8.3.2. É interessato la funzione click.edit. Per causa della ...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#22</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-19-cve-2026-7399-meware-pdks-prima-myr-3-5-2025117-es.html" class="card-title">CVE-2026-7399 | MeWare PDKS prima MYR_3.5.2025117 escalationi di privilegi</a>
+      <p class="card-desc">Un punto di criticita di livello critico è stato rilevato in MeWare PDKS. Riguarda una funzione sconosciuta. Mediante la manipolazione di un...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#23</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-20-cve-2026-7382-meware-pdks-prima-myr-3-5-2025117-pe.html" class="card-title">CVE-2026-7382 | MeWare PDKS prima MYR_3.5.2025117 Personal Information rivelazione di informazioni</a>
+      <p class="card-desc">In MeWare PDKS è stato trovato un punto critico di livello problematico. Viene interessata una funzione sconosciuta appartenente al componen...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#24</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-21-cve-2024-13971-lobster-lobster-pro-prima-4-12-6-ga.html" class="card-title">CVE-2024-13971 | Lobster Lobster_pro prima 4.12.6-GA XML Parser XML External Entity</a>
+      <p class="card-desc">In Lobster Lobster_pro è stata rilevato un punto critico di livello problematico. Si considera coinvolta una funzione sconosciuta nel compon...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#25</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-22-cve-2026-5080-bigpresh-dancer-session-abstract-fin.html" class="card-title">CVE-2026-5080 | BIGPRESH Dancer::Session::Abstract fino a 1.3522 su Perl rand negazione del servizio</a>
+      <p class="card-desc">Un punto critico di livello problematico è stato rilevato in BIGPRESH Dancer::Session::Abstract fino a 1.3522. Risulta coinvolta una funzion...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#26</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-23-cve-2026-7163-red-hat-multicluster-engine-for-kube.html" class="card-title">CVE-2026-7163 | Red Hat Multicluster Engine for Kubernetes Credentials Download Endpoint credentials InfraEnvStatus.ISODownloadURL cifratura debole</a>
+      <p class="card-desc">In Red Hat Multicluster Engine for Kubernetes stata rilevata una vulnerabilità di livello problematico. Da questa vulnerabilità è interessat...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#27</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-24-cve-2025-14576-qt-fino-a-6-8-6-6-10-1-svg-module-e.html" class="card-title">CVE-2025-14576 | Qt fino a 6.8.6/6.10.1 SVG Module escalationi di privilegi</a>
+      <p class="card-desc">È stata rilevata una vulnerabilità di livello critico in Qt fino a 6.8.6/6.10.1. É interessato una funzione sconosciuta del componente SVG M...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#28</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-25-cve-2026-2892-themeisle-otter-blocks-plugin-fino-a.html" class="card-title">CVE-2026-2892 | themeisle Otter Blocks Plugin fino a 3.1.4 su WordPress Stripe API get_customer_data escalationi di privilegi</a>
+      <p class="card-desc">Una vulnerabilità di livello critico è stata rilevata in themeisle Otter Blocks Plugin fino a 3.1.4. Riguarda la funzione get_customer_data ...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#29</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-26-cve-2026-31693-linux-kernel-fino-a-6-6-127-6-12-74.html" class="card-title">CVE-2026-31693 | Linux Kernel fino a 6.6.127/6.12.74/6.18.15/6.19.5 cifs escalationi di privilegi</a>
+      <p class="card-desc">È stata trovata una vulnerabilità classificata come critico in Linux Kernel fino a 6.6.127/6.12.74/6.18.15/6.19.5. Viene interessata una fun...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#30</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-27-top-five-sales-challenges-costing-msps-cybersecuri.html" class="card-title">Top Five Sales Challenges Costing MSPs Cybersecurity Revenue</a>
+      <p class="card-desc">The managed security services market is projected to grow from $38.31 billion in 2025 to $69.16 billion by 2030[1], with cybersecurity being...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#31</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-28-two-cybersecurity-professionals-get-4-year-sentenc.html" class="card-title">Two Cybersecurity Professionals Get 4-Year Sentences in BlackCat Ransomware Attacks</a>
+      <p class="card-desc">The U.S. Department of Justice (DoJ) on Thursday announced the sentencing of two cybersecurity professionals to four years each in prison fo...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#32</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-29-poisoned-ruby-gems-and-go-modules-exploit-ci-pipel.html" class="card-title">Poisoned Ruby Gems and Go Modules Exploit CI Pipelines for Credential Theft</a>
+      <p class="card-desc">A new software supply chain attack campaign has been observed using sleeper packages as a conduit to subsequently push malicious payloads th...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#33</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-30-pytorch-lightning-and-intercom-client-hit-in-suppl.html" class="card-title">PyTorch Lightning and Intercom-client Hit in Supply Chain Attacks to Steal Credentials</a>
+      <p class="card-desc">In yet another software supply chain attack, threat actors have managed to compromise the popular Python package Lightning to push two malic...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#34</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-31-threatsday-bulletin-sms-blaster-busts-openemr-flaw.html" class="card-title">ThreatsDay Bulletin: SMS Blaster Busts, OpenEMR Flaws, 600K Roblox Hacks and 25 More Stories</a>
+      <p class="card-desc">The internet is noisy this week. We are seeing some wild new tactics, like people using fake cell towers to send scam texts, while some deve...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#35</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-32-microsoft-fixes-remote-desktop-warnings-displaying.html" class="card-title">Microsoft fixes Remote Desktop warnings displaying incorrectly</a>
+      <p class="card-desc">Microsoft has fixed a known issue causing newly introduced Windows security warnings to display incorrectly when opening Remote Desktop (.rd...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#36</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-33-microsoft-now-lets-admins-choose-pre-installed-sto.html" class="card-title">Microsoft now lets admins choose pre-installed Store apps to uninstall</a>
+      <p class="card-desc">Microsoft has updated a Windows 11 in-box app removal policy introduced in October to include a dynamic list that lets IT admins choose whic...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#37</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-34-windows-11-kb5083631-update-released-with-34-chang.html" class="card-title">Windows 11 KB5083631 update released with 34 changes and fixes</a>
+      <p class="card-desc">Microsoft has released the KB5083631 optional cumulative update for Windows 11, which includes 34 changes, such as a new Xbox mode for Windo...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#38</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-35-us-ransomware-negotiators-get-4-years-in-prison-ov.html" class="card-title">US ransomware negotiators get 4 years in prison over BlackCat attacks</a>
+      <p class="card-desc">Two former employees of cybersecurity incident response companies Sygnia and DigitalMint were sentenced to four years in prison each for tar...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#39</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-36-new-bluekit-phishing-service-includes-an-ai-assist.html" class="card-title">New Bluekit phishing service includes an AI assistant, 40 templates</a>
+      <p class="card-desc">A new phishing kit named Bluekit offers more than 40 templates targeting popular services and includes basic AI features for generating camp...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#40</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-37-romanian-leader-of-online-swatting-ring-gets-4-yea.html" class="card-title">Romanian leader of online swatting ring gets 4 years in prison</a>
+      <p class="card-desc">A Romanian national who led an online swatting ring that targeted more than 75 public officials, multiple journalists, and four religious in...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#41</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-38-fbi-links-cybercriminals-to-sharp-surge-in-cargo-t.html" class="card-title">FBI links cybercriminals to sharp surge in cargo theft attacks</a>
+      <p class="card-desc">The U.S. Federal Bureau of Investigation (FBI) warned the transportation and logistics industry of a sharp rise in cyber-enabled cargo theft...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#42</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-39-april-kb5083769-windows-11-update-causes-backup-so.html" class="card-title">April KB5083769 Windows 11 update causes backup software failures</a>
+      <p class="card-desc">The April 2026 KB5083769 security update breaks third-party backup applications from multiple vendors on systems running Windows 11 24H2 and...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#43</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-40-what-happens-in-the-first-24-hours-after-a-new-ass.html" class="card-title">What Happens in the First 24 Hours After a New Asset Goes Live</a>
+      <p class="card-desc">When a new asset goes live, attackers start scanning within minutes. Sprocket Security shows how automated attacks move from discovery to co...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#44</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-42-name-that-toon-mark-of-security-progress.html" class="card-title">Name That Toon: Mark of (Security) Progress</a>
+      <p class="card-desc">Feeling creative? Have something to say about the last 20 years of cybersecurity? Our editors will award the best cybersecurity-related capt...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#45</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-43-20-years-in-cyber-dark-reading-marks-milestone-wit.html" class="card-title">20 Years in Cyber: Dark Reading Marks Milestone With Month of Special Coverage</a>
+      <p class="card-desc">On this day in 2006, Dark Reading went live. We have a celebration planned that spans our two decades of covering the industry, and you, dea...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#46</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-44-teampcp-hits-sap-packages-with-mini-shai-hulud-att.html" class="card-title">TeamPCP Hits SAP Packages With &#39;Mini Shai-Hulud&#39; Attack</a>
+      <p class="card-desc">Several npm packages for SAP&#39;s cloud application development ecosystem have been compromised as TeamPCP&#39;s supply chain attacks broaden.</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#47</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-45-another-ai-assisted-software-scan-yields-9-year-ol.html" class="card-title">Another AI-Assisted Software Scan Yields 9-Year-Old Linux Bug</a>
+      <p class="card-desc">The proof-of-concept exploit code runs only 10 lines long, but luckily, a patch is already available.</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#48</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-46-anthropic-s-mythos-has-landed-here-s-what-comes-ne.html" class="card-title">Anthropic&#39;s Mythos Has Landed: Here&#39;s What Comes Next for Cyber</a>
+      <p class="card-desc">In this latest installment of the Reporters&#39; Notebook video series, we discuss how the new AI model threatens to completely upend cybersecur...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#49</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-47-oracle-red-bull-racing-team-revs-up-automation-to-.html" class="card-title">Oracle Red Bull Racing Team Revs Up Automation to Boost Security</a>
+      <p class="card-desc">While drivers race to shave off seconds on the track, the team&#39;s IT and engineering staff are speeding up how they deliver security.</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#50</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-48-ubuntu-website-and-canonical-web-services-hit-by-d.html" class="card-title">Ubuntu Website and Canonical Web Services Hit by DDoS Attack</a>
+      <p class="card-desc">Canonical, the company behind the Ubuntu Linux distribution, is currently experiencing widespread service disruptions across its core web in...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#51</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-49-ransomware-victims-jump-to-7-831-as-ai-crime-tools.html" class="card-title">Ransomware Victims Jump to 7,831 as AI Crime Tools Scale Global Attacks</a>
+      <p class="card-desc">The ransomware threat has reached a new and alarming level. According to Fortinet&amp;#8217;s newly released 2026 Global Threat Landscape Report...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#52</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-50-deep-door-stealer-harvests-browser-passwords-cloud.html" class="card-title">Deep#Door Stealer Harvests Browser Passwords, Cloud Tokens, SSH Keys, and Wi-Fi Credentials</a>
+      <p class="card-desc">A newly identified Python-based malware known as DEEP#DOOR has surfaced as a serious threat to Windows users, combining a fully-featured bac...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#53</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-52-new-fake-captcha-campaign-uses-sms-pumping-fraud-t.html" class="card-title">New Fake CAPTCHA Campaign Uses SMS Pumping Fraud to Run Up Victims’ Phone Bills</a>
+      <p class="card-desc">A newly documented scam campaign is using fake CAPTCHA pages to silently trigger dozens of international SMS messages from victims&amp;#8217; mo...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#54</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-54-anthropic-launches-claude-security-in-public-beta-.html" class="card-title">Anthropic Launches Claude Security in Public Beta for Enterprise Customers</a>
+      <p class="card-desc">Anthropic has opened Claude Security to public beta for Claude Enterprise customers, bringing AI-powered vulnerability detection directly in...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#55</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-55-microsoft-windows-11-april-2026-security-update-br.html" class="card-title">Microsoft Windows 11 April 2026 Security Update Breaks Third-Party Backup Applications</a>
+      <p class="card-desc">Microsoft&amp;#8217;s April 2026 cumulative security update for Windows 11 is causing significant disruptions for users relying on third-party b...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#56</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-56-qilin-ransomware-enumerates-rdp-authentication-his.html" class="card-title">Qilin Ransomware Enumerates RDP Authentication History on a Compromised Server</a>
+      <p class="card-desc">Qilin ransomware is one of the most active and damaging threats in the cyber landscape today. The group has steadily evolved its tactics sin...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#57</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-57-targeted-large-scale-campaign-attacking-u-s-organi.html" class="card-title">Targeted Large-Scale Campaign Attacking U.S. Organizations with Fake Event Invitations</a>
+      <p class="card-desc">A large-scale phishing campaign is actively targeting organizations across the United States, using fake event invitations to deceive employ...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#58</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-58-two-us-security-experts-sentenced-to-prison-for-he.html" class="card-title">Two US Security Experts Sentenced to Prison for Helping Ransomware Gang</a>
+      <p class="card-desc">Ryan Goldberg of Georgia and Kevin Martin of Texas were each sentenced to four years in prison. The post Two US Security Experts Sentenced t...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#59</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-59-sophisticated-deep-door-backdoor-enables-espionage.html" class="card-title">Sophisticated Deep#Door Backdoor Enables Espionage, Disruption</a>
+      <p class="card-desc">The stealthy Python-based backdoor framework deploys a persistent Windows implant likely designed for espionage. The post Sophisticated Deep...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#60</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-60-cisco-releases-open-source-tool-for-ai-model-prove.html" class="card-title">Cisco Releases Open Source Tool for AI Model Provenance</a>
+      <p class="card-desc">The new kit aims to address risks related to poisoned models, regulatory issues, supply chain integrity, and incident response. The post Cis...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#61</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-61-hugging-face-clawhub-abused-for-malware-distributi.html" class="card-title">Hugging Face, ClawHub Abused for Malware Distribution</a>
+      <p class="card-desc">Threat actors are relying on social engineering to lure users into downloading files containing malicious instructions. The post Hugging Fac...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#62</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-62-fbi-warns-of-surge-in-hacker-enabled-cargo-theft.html" class="card-title">FBI Warns of Surge in Hacker-Enabled Cargo Theft</a>
+      <p class="card-desc">A new alert from the FBI says criminal enterprises are hacking both brokers and carriers to steal cargo for resale. The post FBI Warns of Su...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#63</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-63-1-800-hit-in-mini-shai-hulud-attack-on-sap-lightni.html" class="card-title">1,800 Hit in Mini Shai-Hulud Attack on SAP, Lightning, Intercom</a>
+      <p class="card-desc">The compromised Lightning and Intercom packages have a combined monthly download count of nearly 10 million. The post 1,800 Hit in Mini Shai...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#64</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-64-anthropic-unveils-claude-security-to-counter-ai-po.html" class="card-title">Anthropic Unveils Claude Security to Counter AI-Powered Exploit Surge</a>
+      <p class="card-desc">With Mythos signaling a new era of near-instant exploitation, Anthropic positions Claude Security to help defenders keep pace. The post Anth...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#65</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-65-ai-fuels-industrial-cybercrime-as-time-to-exploit-.html" class="card-title">AI Fuels ‘Industrial’ Cybercrime as Time-to-Exploit Shrinks to Hours</a>
+      <p class="card-desc">Industrialized cybercrime delivers attacks with greater scale, speed and success. Defenders must match this with use of AI and automation. T...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#66</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-66-sonicwall-urges-immediate-patching-of-firewall-vul.html" class="card-title">SonicWall Urges Immediate Patching of Firewall Vulnerabilities</a>
+      <p class="card-desc">The bugs could be exploited to bypass security controls, access restricted services, and crash firewalls. The post SonicWall Urges Immediate...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#67</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-67-sap-npm-packages-targeted-in-supply-chain-attack.html" class="card-title">SAP NPM Packages Targeted in Supply Chain Attack</a>
+      <p class="card-desc">The Mini Shai-Hulud attack introduced a preinstall hook to fetch and execute a Bun binary and bypass security monitoring. The post SAP NPM P...</p>
+    </div>
+</div>
+
+<div class="no-results" id="no-results">
+  <p>Nessun risultato trovato</p>
+</div>
+
+<footer class="footer">
+  <p>Dashboard di sicurezza informatica - Generato automaticamente</p>
+  <p>Visualizza tutti gli avvisi di sicurezza dal vivo su: <a href="#">link</a></p>
+</footer>
+
+<script>
+(function() {
+  const cards = document.querySelectorAll('.card');
+  const buttons = document.querySelectorAll('[data-filter]');
+  const searchInput = document.getElementById('search');
+  const noResults = document.getElementById('no-results');
+  
+  let currentFilter = 'all';
+  let searchTerm = '';
+
+  const filterCards = () => {
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+      const matchesFilter = currentFilter === 'all' || card.dataset.severity === currentFilter;
+      const matchesSearch = !searchTerm || card.textContent.toLowerCase().includes(searchTerm);
+      const isVisible = matchesFilter && matchesSearch;
+      
+      card.style.display = isVisible ? 'block' : 'none';
+      if (isVisible) visibleCount++;
+    });
+    
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      filterCards();
+    });
+  });
+
+  let debounceTimer;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchTerm = e.target.value.toLowerCase();
+      filterCards();
+    }, 150);
+  });
+})();
+</script>
+
+</body>
+</html>
