@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Security News Dashboard</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --primary: #00ff9f;
+      --primary-dim: #00cc7a;
+      --card-bg: #111;
+      --border: rgba(0, 255, 159, 0.2);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--primary);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: clamp(1.2rem, 4vw, 2rem);
+      text-shadow: 0 0 20px var(--primary);
+      margin: 0 0 10px 0;
+    }
+    .header time {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    .stat {
+      padding: 8px 15px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      background: var(--card-bg);
+    }
+    .stat.critical { border-color: #ff4444; }
+    .stat.high { border-color: #ff8c00; }
+    .stat.medium { border-color: #ffd700; }
+    .stat.low { border-color: var(--primary-dim); }
+    .controls {
+      max-width: 900px;
+      margin: 0 auto 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-wrapper {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrapper::before {
+      content: '🔍';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 10px 10px 35px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .filter-buttons {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 10px 15px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    button:hover, button.active {
+      background: var(--primary);
+      color: var(--bg);
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      display: grid;
+      gap: 15px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      background: var(--card-bg);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .index {
+      font-size: 12px;
+      opacity: 0.6;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .critical { background: #ff4444; color: #fff; }
+    .high { background: #ff8c00; color: #000; }
+    .medium { background: #ffd700; color: #000; }
+    .low { background: var(--primary-dim); color: #000; }
+    .card-title {
+      display: block;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .card-title:hover { text-decoration: underline; }
+    .card-desc {
+      font-size: 12px;
+      color: var(--primary-dim);
+      margin: 0;
+    }
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      opacity: 0.6;
+      display: none;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      opacity: 0.6;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .controls { flex-direction: column; }
+      .filter-buttons { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🛡️ CYBER SECURITY NEWS DASHBOARD</h1>
+  <time datetime="2026-05-02T16:01:06.580Z">02/05/2026, 16:01</time>
+</div>
+
+<div class="stats">
+  <div class="stat">📊 Totale: <strong>14</strong></div>
+  <div class="stat critical">🔴 Critical: <strong>1</strong></div>
+  <div class="stat high">🟠 High: <strong>1</strong></div>
+  <div class="stat medium">🟡 Medium: <strong>0</strong></div>
+  <div class="stat low">🟢 Low: <strong>12</strong></div>
+</div>
+
+<div class="controls">
+  <div class="search-wrapper">
+    <input type="search" id="search" placeholder="Cerca nelle notizie..." aria-label="Cerca">
+  </div>
+  <div class="filter-buttons">
+    <button class="active" data-filter="all">Tutte</button>
+    <button data-filter="critical">Critical</button>
+    <button data-filter="high">High</button>
+    <button data-filter="medium">Medium</button>
+    <button data-filter="low">Low</button>
+  </div>
+</div>
+
+<div class="container" id="cards">
+  
+    <div class="card" data-severity="critical">
+      <div class="card-top">
+        <span class="index">#01</span>
+        <span class="badge critical">critical</span>
+      </div>
+      <a href="news-12-cpanelsniper-poc-exploit-disclosed-for-cpanel-vuln.html" class="card-title">cPanelSniper – PoC Exploit Disclosed for cPanel Vulnerability, 44,000 Servers Compromised</a>
+      <p class="card-desc">A weaponized proof-of-concept (PoC) exploit framework dubbed &amp;#8220;cPanelSniper&amp;#8221; has been publicly released for CVE-2026-41940, a max...</p>
+    </div>
+    <div class="card" data-severity="high">
+      <div class="card-top">
+        <span class="index">#02</span>
+        <span class="badge high">high</span>
+      </div>
+      <a href="news-10-attackers-deploy-aitm-phishing-pages-to-access-sha.html" class="card-title">Attackers Deploy AiTM Phishing Pages to Access SharePoint, HubSpot, and Google Workspace</a>
+      <p class="card-desc">Threat actors are rapidly shifting their intrusion tradecraft toward high-speed, SaaS-centric attacks that completely bypass traditional end...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#03</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-1-trellix-confirms-source-code-breach-with-unauthori.html" class="card-title">Trellix Confirms Source Code Breach With Unauthorized Repository Access</a>
+      <p class="card-desc">Cybersecurity company Trellix has announced that it suffered a breach that enabled unauthorized access to a &quot;portion&quot; of its source code. It...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#04</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-2-30-000-facebook-accounts-hacked-via-google-appshee.html" class="card-title">30,000 Facebook Accounts Hacked via Google AppSheet Phishing Campaign</a>
+      <p class="card-desc">A newly discovered Vietnamese-linked operation has been observed using a Google AppSheet as a &quot;phishing relay&quot; to distribute phishing emails...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#05</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-3-consentfix-v3-attacks-target-azure-with-automated-.html" class="card-title">ConsentFix v3 attacks target Azure with automated OAuth abuse</a>
+      <p class="card-desc">A new attack type, dubbed ConsentFix v3, has been circulating on hacker forums, building on the previous technique by adding automation and ...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#06</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-4-microsoft-tests-modern-windows-run-says-it-s-faste.html" class="card-title">Microsoft tests modern Windows Run, says it&#39;s faster than legacy dialog</a>
+      <p class="card-desc">Microsoft has confirmed that Windows 11 is getting a new modern Run dialog with dark mode support and faster performance in a new preview bu...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#07</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-5-edu-tech-firm-instructure-discloses-cyber-incident.html" class="card-title">Edu tech firm Instructure discloses cyber incident, probes impact</a>
+      <p class="card-desc">Instructure, the company behind the widely used Canvas learning platform, has disclosed that it recently suffered a cybersecurity incident a...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#08</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-6-15-year-old-detained-over-french-govt-agency-data-.html" class="card-title">15-year-old detained over French govt agency data breach</a>
+      <p class="card-desc">French authorities have detained a 15-year-old suspected of selling data stolen in a cyberattack on France Titres (ANTS), the country&#39;s agen...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#09</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-7-story-retracted.html" class="card-title">Story retracted</a>
+      <p class="card-desc">BleepingComputer initially published a story about a new data breach at Instructure. Shortly after publication, we determined that the infor...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#10</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-8-76-of-all-crypto-stolen-in-2026-is-now-in-north-ko.html" class="card-title">76% of All Crypto Stolen in 2026 Is Now in North Korea</a>
+      <p class="card-desc">North Korean threat actors are pulling off historic cryptocurrency heists on a yearly, sometimes weekly basis now. AI might be helping them.</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#11</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-9-multiple-exim-mail-server-vulnerabilities-leads-to.html" class="card-title">Multiple Exim Mail Server Vulnerabilities Leads to Crash with Malicious DNS data</a>
+      <p class="card-desc">The Exim development team has released version 4.99.2 to address four newly discovered security vulnerabilities affecting their mail server ...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#12</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-11-attackers-abuse-google-appsheet-netlify-and-telegr.html" class="card-title">Attackers Abuse Google AppSheet, Netlify, and Telegram in Facebook Phishing Campaign</a>
+      <p class="card-desc">A sophisticated cybercriminal operation dubbed &amp;#8220;AccountDumpling&amp;#8221; has compromised approximately 30,000 Facebook accounts worldwid...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#13</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-13-criminal-ip-and-securonix-threatq-collaborate-to-e.html" class="card-title">Criminal IP and Securonix ThreatQ Collaborate to Enhance Threat Intelligence Operations</a>
+      <p class="card-desc">Torrance, United States / California, May 1st, 2026, CyberNewswire Criminal IP partners with Securonix to integrate Criminal IP’s Threat Int...</p>
+    </div>
+    <div class="card" data-severity="low">
+      <div class="card-top">
+        <span class="index">#14</span>
+        <span class="badge low">low</span>
+      </div>
+      <a href="news-14-new-bluekit-phishing-kit-features-ai-assistant.html" class="card-title">New Bluekit Phishing Kit Features AI Assistant</a>
+      <p class="card-desc">Still under development, Bluekit provides users with automated domain registration and an AI Assistant. The post New Bluekit Phishing Kit Fe...</p>
+    </div>
+</div>
+
+<div class="no-results" id="no-results">
+  <p>Nessun risultato trovato</p>
+</div>
+
+<footer class="footer">
+  <p>Dashboard di sicurezza informatica - Generato automaticamente</p>
+  <p>Visualizza tutti gli avvisi di sicurezza dal vivo su: <a href="#">link</a></p>
+</footer>
+
+<script>
+(function() {
+  const cards = document.querySelectorAll('.card');
+  const buttons = document.querySelectorAll('[data-filter]');
+  const searchInput = document.getElementById('search');
+  const noResults = document.getElementById('no-results');
+  
+  let currentFilter = 'all';
+  let searchTerm = '';
+
+  const filterCards = () => {
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+      const matchesFilter = currentFilter === 'all' || card.dataset.severity === currentFilter;
+      const matchesSearch = !searchTerm || card.textContent.toLowerCase().includes(searchTerm);
+      const isVisible = matchesFilter && matchesSearch;
+      
+      card.style.display = isVisible ? 'block' : 'none';
+      if (isVisible) visibleCount++;
+    });
+    
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      filterCards();
+    });
+  });
+
+  let debounceTimer;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchTerm = e.target.value.toLowerCase();
+      filterCards();
+    }, 150);
+  });
+})();
+</script>
+
+</body>
+</html>
